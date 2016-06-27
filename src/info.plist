@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>bundleid</key>
+	<string>ChinaWeather</string>
+	<key>connections</key>
+	<dict>
+		<key>AE8B9982-5E75-480D-8A79-EE3F64BE1EC6</key>
+		<array>
+			<dict>
+				<key>destinationuid</key>
+				<string>B7A9E079-67BB-4298-B0F4-BB30616A15BF</string>
+				<key>modifiers</key>
+				<integer>0</integer>
+				<key>modifiersubtext</key>
+				<string></string>
+				<key>vitoclose</key>
+				<false/>
+			</dict>
+		</array>
+	</dict>
+	<key>createdby</key>
+	<string>Bob</string>
+	<key>description</key>
+	<string>查询中国城市的天气信息</string>
+	<key>disabled</key>
+	<false/>
+	<key>name</key>
+	<string>China weather</string>
+	<key>objects</key>
+	<array>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>alfredfiltersresults</key>
+				<false/>
+				<key>argumenttype</key>
+				<integer>1</integer>
+				<key>escaping</key>
+				<integer>127</integer>
+				<key>keyword</key>
+				<string>tq</string>
+				<key>queuedelaycustom</key>
+				<integer>3</integer>
+				<key>queuedelayimmediatelyinitially</key>
+				<true/>
+				<key>queuedelaymode</key>
+				<integer>0</integer>
+				<key>queuemode</key>
+				<integer>2</integer>
+				<key>runningsubtext</key>
+				<string>正在查询天气信息...</string>
+				<key>script</key>
+				<string>require './Weather'
+query = ARGV[0]
+#if query.empty? then query = '北京' end
+w = Weather.new
+w.search_weather(query)
+</string>
+				<key>scriptargtype</key>
+				<integer>1</integer>
+				<key>scriptfile</key>
+				<string></string>
+				<key>subtext</key>
+				<string>请输入城市名</string>
+				<key>title</key>
+				<string>天气查询</string>
+				<key>type</key>
+				<integer>2</integer>
+				<key>withspace</key>
+				<true/>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.input.scriptfilter</string>
+			<key>uid</key>
+			<string>AE8B9982-5E75-480D-8A79-EE3F64BE1EC6</string>
+			<key>version</key>
+			<integer>2</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>concurrently</key>
+				<false/>
+				<key>escaping</key>
+				<integer>102</integer>
+				<key>script</key>
+				<string>query = ARGV[0]
+if query.start_with? 'http'
+  system('open', query)
+else
+  IO.popen('pbcopy', 'w') { |f| f &lt;&lt; query }
+end</string>
+				<key>scriptargtype</key>
+				<integer>1</integer>
+				<key>scriptfile</key>
+				<string></string>
+				<key>type</key>
+				<integer>2</integer>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.action.script</string>
+			<key>uid</key>
+			<string>B7A9E079-67BB-4298-B0F4-BB30616A15BF</string>
+			<key>version</key>
+			<integer>2</integer>
+		</dict>
+	</array>
+	<key>readme</key>
+	<string>Weather</string>
+	<key>uidata</key>
+	<dict>
+		<key>AE8B9982-5E75-480D-8A79-EE3F64BE1EC6</key>
+		<dict>
+			<key>xpos</key>
+			<integer>210</integer>
+			<key>ypos</key>
+			<integer>230</integer>
+		</dict>
+		<key>B7A9E079-67BB-4298-B0F4-BB30616A15BF</key>
+		<dict>
+			<key>xpos</key>
+			<integer>480</integer>
+			<key>ypos</key>
+			<integer>230</integer>
+		</dict>
+	</dict>
+	<key>webaddress</key>
+	<string>https://github.com/m2nlight/ChinaWeather-workflow</string>
+</dict>
+</plist>
