@@ -33,6 +33,36 @@
 		<dict>
 			<key>config</key>
 			<dict>
+				<key>concurrently</key>
+				<false/>
+				<key>escaping</key>
+				<integer>102</integer>
+				<key>script</key>
+				<string>query = ARGV[0]
+if query.start_with? 'http'
+  system('open', query)
+elsif query.start_with? ':error'
+  #do nothing
+else
+  IO.popen('pbcopy', 'w') { |f| f &lt;&lt; query }
+end</string>
+				<key>scriptargtype</key>
+				<integer>1</integer>
+				<key>scriptfile</key>
+				<string></string>
+				<key>type</key>
+				<integer>2</integer>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.action.script</string>
+			<key>uid</key>
+			<string>B7A9E079-67BB-4298-B0F4-BB30616A15BF</string>
+			<key>version</key>
+			<integer>2</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
 				<key>alfredfiltersresults</key>
 				<false/>
 				<key>argumenttype</key>
@@ -75,34 +105,6 @@ w.search_weather(query)
 			<string>alfred.workflow.input.scriptfilter</string>
 			<key>uid</key>
 			<string>AE8B9982-5E75-480D-8A79-EE3F64BE1EC6</string>
-			<key>version</key>
-			<integer>2</integer>
-		</dict>
-		<dict>
-			<key>config</key>
-			<dict>
-				<key>concurrently</key>
-				<false/>
-				<key>escaping</key>
-				<integer>102</integer>
-				<key>script</key>
-				<string>query = ARGV[0]
-if query.start_with? 'http'
-  system('open', query)
-else
-  IO.popen('pbcopy', 'w') { |f| f &lt;&lt; query }
-end</string>
-				<key>scriptargtype</key>
-				<integer>1</integer>
-				<key>scriptfile</key>
-				<string></string>
-				<key>type</key>
-				<integer>2</integer>
-			</dict>
-			<key>type</key>
-			<string>alfred.workflow.action.script</string>
-			<key>uid</key>
-			<string>B7A9E079-67BB-4298-B0F4-BB30616A15BF</string>
 			<key>version</key>
 			<integer>2</integer>
 		</dict>

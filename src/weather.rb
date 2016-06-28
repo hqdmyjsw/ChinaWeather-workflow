@@ -7,35 +7,53 @@ require 'net/http'
 
 # Search china weather
 class Weather
-  @city = ''
-  def search_weather(query) # rubocop:disable Metrics/MethodLength
-    query = query.delete(EXSTRING)
-    @city = query.empty? ? search_location : query
-    # request data
+  def search_weather(query)
+    query_city = query.delete(EX_STRING)
+    @city = query_city.empty? ? take_city : query_city
+    take_weather
+  end
+
+  def take_json(uri, is_output_error = false)
+    res = Net::HTTP.get_response(URI.parse(uri))
+    JSON.parse(res.body) if res.is_a?(Net::HTTPSuccess)
+  rescue
+    output_error('暂时无法连接到服务器', '请检查网络连接或者稍后再试。', ':error') if is_output_error
+  end
+
+  def take_city
+    json = take_json(API_LOCATION)
+    json.nil? ? '未知' : json['content']['address']
+  end
+
+  def take_weather
     uri = API_WEATHER + URI.encode_www_form_component(@city)
-    resp = Net::HTTP.get_response(URI.parse(uri))
-    json = JSON.parse(resp.body)
+    json = take_json(uri, is_output_error: true)
+    return if json.nil?
     if json['error'] != 0
       output_error
     else
       current_city = json['results'][0]['currentCity']
       pm25 = json['results'][0]['pm25']
-      weatherdata = json['results'][0]['weather_data']
-      output_result(current_city, pm25, weatherdata)
+      weather_data = json['results'][0]['weather_data']
+      output_result(current_city, pm25, weather_data)
     end
   end
 
-  def search_location
-    uri = API_LOCATION
-    resp = Net::HTTP.get_response(URI.parse(uri))
-    json = JSON.parse(resp.body)
-    address = json['content']['address']
-    address
+  def take_weather_icon(keyword)
+    output = ICONS[keyword]
+    ICONS.each { |key, value|
+      if keyword.include?(key)
+        output = value
+        break
+      end
+    } if output.nil?
+    output = 'unknown.png' if output.nil?
+    output
   end
 
-  def output_result(current_city, pm25, weatherdata) # rubocop:disable Metrics/MethodLength
+  def output_result(current_city, pm25, weather_data)
     s = ''
-    weatherdata.each.with_index do |x, i|
+    weather_data.each.with_index do |x, i|
       title = x['date']
       subtitle = "#{x['weather']}  #{x['wind']}  #{x['temperature']}"
       icon = take_weather_icon(x['weather'])
@@ -55,35 +73,24 @@ class Weather
     print "<?xml version=\"1.0\"?><items>#{s}</items>"
   end
 
-  def output_error
+  def output_error(title = nil, subtitle = nil, arg = nil)
+    title = "未查到“#{@city}”的天气，按回车显示网页结果。" if title.nil?
+    subtitle = '提示：若查询北京市天气，请输入：tq 北京 或者 tq beijing' if subtitle.nil?
+    arg = "https://www.baidu.com/s?wd=#{@city}天气" if arg.nil?
     print "<?xml version=\"1.0\"?> \
-<items> \
-<item arg=\"https://www.baidu.com/s?wd=#{@city}天气\" valid=\"yes\"> \
-<title>未查到“#{@city}”的天气，按回车显示网页结果。</title> \
-<subtitle>提示：若查询北京市天气，请输入：tq 北京 或者 tq beijing</subtitle> \
+<items><item arg=\"#{arg}\" valid=\"yes\"> \
+<title>#{title}</title> \
+<subtitle>#{subtitle}</subtitle> \
 <icon>unknown.png</icon> \
 </item></items>"
   end
 
-  def take_weather_icon(keyword)
-    output = ICONS[keyword]
-    if output.nil?
-      ICONS.each do |key, value|
-        if keyword.include? key
-          output = value
-          break
-        end
-      end
-    end
-    output.nil? ? 'unknown.png' : output
-  end
-
-  private :search_location, :output_result, :output_error, :take_weather_icon
+  private :take_json, :take_city, :take_weather, :take_weather_icon, :output_error, :output_result
 end
 
 API_WEATHER = 'http://api.map.baidu.com/telematics/v3/weather?output=json&ak=Gy7SGUigZ4HxGYDaq9azWy09&location='.freeze
 API_LOCATION = 'http://api.map.baidu.com/location/ip?ak=ZmjUrFm4QT13mrgUrHcYXRIt'.freeze
-EXSTRING = "<>'\"& \n\t\r;#".freeze
+EX_STRING = "<>'\"& \n\t\r;#".freeze
 ICONS = {
   '雾霾' => 'haze.png',
   '霾' => 'haze.png',
