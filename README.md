@@ -19,4 +19,4 @@ An Alfred workflow that can search china weather.
 * 输入`tq 上海`或者`tq shanghai`可显示上海天气
 * 在显示天气结果上按`return`，会复制天气信息到剪贴板
 * 在查询失败结果上按`return`，会用默认的Web浏览器打开百度的搜索结果页面
-* 在结果中按`alt＋return`，会用默认的Web浏览器打开百度的搜索结果页面
+* 在结果中按`command＋return`，会用默认的Web浏览器打开百度的搜索结果页面
