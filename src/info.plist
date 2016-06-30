@@ -22,7 +22,7 @@
 				<key>destinationuid</key>
 				<string>2C9D998D-F41E-4041-90D2-5714B2C50E6A</string>
 				<key>modifiers</key>
-				<integer>524288</integer>
+				<integer>1048576</integer>
 				<key>modifiersubtext</key>
 				<string>查看网页上的天气结果...</string>
 				<key>vitoclose</key>
@@ -40,6 +40,31 @@
 	<string>China weather</string>
 	<key>objects</key>
 	<array>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>concurrently</key>
+				<false/>
+				<key>escaping</key>
+				<integer>102</integer>
+				<key>script</key>
+				<string>require './action'
+query = ARGV[0]
+Action.run(query)</string>
+				<key>scriptargtype</key>
+				<integer>1</integer>
+				<key>scriptfile</key>
+				<string></string>
+				<key>type</key>
+				<integer>2</integer>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.action.script</string>
+			<key>uid</key>
+			<string>B7A9E079-67BB-4298-B0F4-BB30616A15BF</string>
+			<key>version</key>
+			<integer>2</integer>
+		</dict>
 		<dict>
 			<key>config</key>
 			<dict>
@@ -84,31 +109,6 @@ Weather.search_weather(query)
 			<string>alfred.workflow.input.scriptfilter</string>
 			<key>uid</key>
 			<string>AE8B9982-5E75-480D-8A79-EE3F64BE1EC6</string>
-			<key>version</key>
-			<integer>2</integer>
-		</dict>
-		<dict>
-			<key>config</key>
-			<dict>
-				<key>concurrently</key>
-				<false/>
-				<key>escaping</key>
-				<integer>102</integer>
-				<key>script</key>
-				<string>require './action'
-query = ARGV[0]
-Action.run(query)</string>
-				<key>scriptargtype</key>
-				<integer>1</integer>
-				<key>scriptfile</key>
-				<string></string>
-				<key>type</key>
-				<integer>2</integer>
-			</dict>
-			<key>type</key>
-			<string>alfred.workflow.action.script</string>
-			<key>uid</key>
-			<string>B7A9E079-67BB-4298-B0F4-BB30616A15BF</string>
 			<key>version</key>
 			<integer>2</integer>
 		</dict>
