@@ -1,4 +1,4 @@
-#!usr/bin/env ruby
+#!/usr/bin/env ruby
 # encoding: utf-8
 
 require 'rubygems'
@@ -6,88 +6,97 @@ require 'json'
 require 'net/http'
 
 # Search china weather
-class Weather
-  def search_weather(query)
-    q = query.delete(EX_STRING)
-    @city = q.empty? ? take_city : q
-    take_weather
+module Weather
+  def self.search_weather(query)
+    WeatherFetcher.new.search(query)
   end
 
-  def take_json(uri, is_output_error = false)
-    res = Net::HTTP.get_response(URI.parse(uri))
-    JSON.parse(res.body) if res.is_a?(Net::HTTPSuccess)
-  rescue
-    output_error('暂时无法连接到服务器', '请检查网络连接或者稍后再试。', ':error') if is_output_error
-  end
-
-  def take_city(default = '未知')
-    json = take_json(API_LOCATION)
-    city = json['content']['address'] if not json.nil?
-    city = default if city.nil?
-    city
-  end
-
-  def take_weather
-    uri = API_WEATHER + URI.encode_www_form_component(@city)
-    json = take_json(uri, is_output_error: true)
-    return if json.nil?
-    if json['error'] != 0
-      output_error
-    else
-      current_city = json['results'][0]['currentCity']
-      pm25 = json['results'][0]['pm25']
-      weather_data = json['results'][0]['weather_data']
-      output_result(current_city, pm25, weather_data)
+  # Weather fetcher
+  class WeatherFetcher
+    def search(query)
+      q = query.delete(EX_STRING)
+      @city = q.empty? ? take_city : q
+      take_weather
     end
-  end
 
-  def take_weather_icon(keyword)
-    output = ICONS[keyword]
-    ICONS.each { |key, value|
-      if keyword.include?(key)
-        output = value
-        break
+    def take_json(uri, is_output_error = false)
+      res = Net::HTTP.get_response(URI.parse(uri))
+      JSON.parse(res.body) if res.is_a?(Net::HTTPSuccess)
+    rescue
+      output_error('暂时无法连接到服务器', '请检查网络连接或者稍后再试。', 'ERR') if is_output_error
+    end
+
+    def take_city(default = '未知')
+      json = take_json(API_LOCATION)
+      city = json['content']['address'] unless json.nil?
+      city = default if city.nil?
+      city
+    end
+
+    def take_weather
+      uri = API_WEATHER + URI.encode_www_form_component(@city)
+      json = take_json(uri, is_output_error: true)
+      return if json.nil?
+      if json['error'] != 0
+        output_error
+      else
+        current_city = json['results'][0]['currentCity']
+        pm25 = json['results'][0]['pm25']
+        weather_data = json['results'][0]['weather_data']
+        output_result(current_city, pm25, weather_data)
       end
-    } if output.nil?
-    output = 'unknown.png' if output.nil?
-    output
-  end
+    end
 
-  def output_result(current_city, pm25, weather_data)
-    s = ''
-    weather_data.each.with_index do |x, i|
-      title = x['date']
-      subtitle = "#{x['weather']}  #{x['wind']}  #{x['temperature']}"
-      icon = take_weather_icon(x['weather'])
-      arg = "#{current_city} #{x['date']} #{x['weather']} #{x['wind']} #{x['temperature']}"
-      if i == 0
-        title += "  #{current_city}"
-        unless pm25.empty?
-          subtitle += "  PM2.5: #{pm25}"
-          arg += " PM2.5: #{pm25}"
+    def take_weather_icon(keyword)
+      output = ICONS[keyword]
+      ICONS.each do |key, value|
+        if keyword.include?(key)
+          output = value
+          break
         end
-      end
-      s += "<item arg=\"#{arg}\" valid=\"yes\"> \
+      end if output.nil?
+      output = 'unknown.png' if output.nil?
+      output
+    end
+
+    def take_arg(msg, info = '')
+      [msg, @city, info].join('|')
+    end
+
+    def output_result(current_city, pm25, weather_data)
+      s = ''
+      weather_data.each.with_index do |x, i|
+        title = x['date']
+        subtitle = "#{x['weather']}  #{x['wind']}  #{x['temperature']}"
+        icon = take_weather_icon(x['weather'])
+        arg = take_arg('OK', "#{current_city} #{x['date']} #{x['weather']} #{x['wind']} #{x['temperature']}")
+        if i == 0
+          title += "  #{current_city}"
+          unless pm25.empty?
+            subtitle += "  PM2.5: #{pm25}"
+            arg += " PM2.5: #{pm25}"
+          end
+        end
+        s += "<item arg=\"#{arg}\" valid=\"yes\"> \
 <title>#{title}</title> \
 <subtitle>#{subtitle}</subtitle> \
 <icon>#{icon}</icon></item>"
+      end
+      print "<?xml version=\"1.0\"?><items>#{s}</items>"
     end
-    print "<?xml version=\"1.0\"?><items>#{s}</items>"
-  end
 
-  def output_error(title = nil, subtitle = nil, arg = nil)
-    title = "未查到“#{@city}”的天气，按回车显示网页结果。" if title.nil?
-    subtitle = '提示：若查询北京市天气，请输入：tq 北京 或者 tq beijing' if subtitle.nil?
-    arg = "https://www.baidu.com/s?wd=#{@city}天气" if arg.nil?
-    print "<?xml version=\"1.0\"?> \
+    def output_error(title = nil, subtitle = nil, arg_msg = nil)
+      title = "未查到“#{@city}”的天气，按回车显示网页结果。" if title.nil?
+      subtitle = '提示：若查询北京市天气，请输入：tq 北京 或者 tq beijing' if subtitle.nil?
+      arg = take_arg(arg_msg.nil? ? 'WEB' : arg_msg)
+      print "<?xml version=\"1.0\"?> \
 <items><item arg=\"#{arg}\" valid=\"yes\"> \
 <title>#{title}</title> \
 <subtitle>#{subtitle}</subtitle> \
 <icon>unknown.png</icon> \
 </item></items>"
+    end
   end
-
-  private :take_json, :take_city, :take_weather, :take_weather_icon, :output_error, :output_result
 end
 
 API_WEATHER = 'http://api.map.baidu.com/telematics/v3/weather?output=json&ak=Gy7SGUigZ4HxGYDaq9azWy09&location='.freeze
