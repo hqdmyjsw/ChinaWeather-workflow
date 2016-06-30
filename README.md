@@ -14,7 +14,7 @@ An Alfred workflow that can search china weather.
 
 ### 使用
 
-* 下载[`China weather.alfredworkflow`](https://github.com/m2nlight/ChinaWeather-workflow/releases/download/v0.1.1/China.weather.alfredworkflow)，双击或者用 Alfred 打开导入到 Workflow
+* 从Release或者Tags下载[`China weather.alfredworkflow`](https://github.com/m2nlight/ChinaWeather-workflow/releases/download/v0.1.2/China.weather.alfredworkflow)，双击或者用 Alfred 打开导入到 Workflow
 * 在 Alfred 中输入 `tq` 会显示当前IP地址所在城市的天气情况（可在tq里修改成默认城市）
 * 输入`tq 上海`或者`tq shanghai`可显示上海天气
 * 在显示天气结果上按`return`，会复制天气信息到剪贴板
