@@ -8,8 +8,8 @@ require 'net/http'
 # Search china weather
 class Weather
   def search_weather(query)
-    query_city = query.delete(EX_STRING)
-    @city = query_city.empty? ? take_city : query_city
+    q = query.delete(EX_STRING)
+    @city = q.empty? ? take_city : q
     take_weather
   end
 
@@ -20,9 +20,11 @@ class Weather
     output_error('暂时无法连接到服务器', '请检查网络连接或者稍后再试。', ':error') if is_output_error
   end
 
-  def take_city
+  def take_city(default = '未知')
     json = take_json(API_LOCATION)
-    json.nil? ? '未知' : json['content']['address']
+    city = json['content']['address'] if not json.nil?
+    city = default if city.nil?
+    city
   end
 
   def take_weather

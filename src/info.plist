@@ -39,10 +39,10 @@
 				<integer>102</integer>
 				<key>script</key>
 				<string>query = ARGV[0]
-if query.start_with? 'http'
+if query.start_with? 'https:'
   system('open', query)
 elsif query.start_with? ':error'
-  #do nothing
+  # do nothing
 else
   IO.popen('pbcopy', 'w') { |f| f &lt;&lt; query }
 end</string>
@@ -84,8 +84,8 @@ end</string>
 				<key>script</key>
 				<string>require './Weather'
 query = ARGV[0]
-#if query.empty? then query = '北京' end
 w = Weather.new
+# query = '北京' if query.empty?
 w.search_weather(query)
 </string>
 				<key>scriptargtype</key>
