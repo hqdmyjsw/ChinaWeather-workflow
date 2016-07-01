@@ -19,18 +19,19 @@ module Weather
       take_weather
     end
 
-    def take_json(uri, is_output_error = false)
-      res = Net::HTTP.get_response(URI.parse(uri))
-      JSON.parse(res.body) if res.is_a?(Net::HTTPSuccess)
-    rescue
-      output_error('暂时无法连接到服务器', '请检查网络连接或者稍后再试。', 'ERR') if is_output_error
-    end
-
     def take_city(default = '未知')
       json = take_json(API_LOCATION)
-      city = json['content']['address'] unless json.nil?
-      city = default if city.nil?
+      city = json.nil? ? default : json['content']['address']
+      city = default if city.nil? || city.empty?
       city
+    end
+
+    def take_json(uri, is_output_error = false)
+      res = Net::HTTP.get_response(URI.parse(uri))
+      res.is_a?(Net::HTTPSuccess) ? JSON.parse(res.body) : nil
+    rescue
+      output_error('暂时无法连接到服务器', '请检查网络连接或者稍后再试。', 'ERR') if is_output_error
+      nil
     end
 
     def take_weather
@@ -47,20 +48,16 @@ module Weather
       end
     end
 
-    def take_weather_icon(keyword)
-      output = ICONS[keyword]
-      ICONS.each do |key, value|
-        if keyword.include?(key)
-          output = value
-          break
-        end
-      end if output.nil?
-      output = 'unknown.png' if output.nil?
-      output
-    end
-
-    def take_arg(msg, info = '')
-      [msg, @city, info].join('|')
+    def output_error(title = nil, subtitle = nil, arg_msg = nil)
+      title = "未查到“#{@city}”的天气，按回车显示网页结果。" if title.nil?
+      subtitle = '提示：若查询北京市天气，请输入：tq 北京 或者 tq beijing' if subtitle.nil?
+      arg = take_arg(arg_msg.nil? ? 'WEB' : arg_msg)
+      print "<?xml version=\"1.0\"?> \
+<items><item arg=\"#{arg}\" valid=\"yes\"> \
+<title>#{title}</title> \
+<subtitle>#{subtitle}</subtitle> \
+<icon>unknown.png</icon> \
+</item></items>"
     end
 
     def output_result(current_city, pm25, weather_data)
@@ -85,16 +82,22 @@ module Weather
       print "<?xml version=\"1.0\"?><items>#{s}</items>"
     end
 
-    def output_error(title = nil, subtitle = nil, arg_msg = nil)
-      title = "未查到“#{@city}”的天气，按回车显示网页结果。" if title.nil?
-      subtitle = '提示：若查询北京市天气，请输入：tq 北京 或者 tq beijing' if subtitle.nil?
-      arg = take_arg(arg_msg.nil? ? 'WEB' : arg_msg)
-      print "<?xml version=\"1.0\"?> \
-<items><item arg=\"#{arg}\" valid=\"yes\"> \
-<title>#{title}</title> \
-<subtitle>#{subtitle}</subtitle> \
-<icon>unknown.png</icon> \
-</item></items>"
+    def take_weather_icon(keyword)
+      output = ICONS[keyword]
+      if output.nil?
+        ICONS.each do |key, value|
+          if keyword.include?(key)
+            output = value
+            break
+          end
+        end
+      end
+      output = 'unknown.png' if output.nil?
+      output
+    end
+
+    def take_arg(msg, info = '')
+      [msg, @city, info].join('|') # msg: OK/WEB/ERR
     end
   end
 end

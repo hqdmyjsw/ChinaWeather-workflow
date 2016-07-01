@@ -4,22 +4,24 @@
 # result to action
 module Action
   def self.run(query)
-    Acter.new.run(query)
+    Actor.new.run(query)
   end
 
   def self.run_web(query)
-    Acter.new.run_web(query)
+    Actor.new.run_web(query)
   end
 
-  # Acter
-  class Acter
+  # Actor
+  class Actor
     def run(query)
       (msg, city, info) = query.split('|')
       case msg # OK/WEB/ERR
-      when 'OK'
-        copy_to_clipboard(info)
-      when 'WEB'
-        open_web_page(city)
+        when 'OK'
+          copy_to_clipboard(info)
+        when 'WEB'
+          open_web_page(city)
+        else
+          nil
       end
     end
 
