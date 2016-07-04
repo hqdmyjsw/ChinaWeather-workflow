@@ -92,8 +92,7 @@ module Weather
           end
         end
       end
-      output = 'unknown.png' if output.nil?
-      output
+      output || 'unknown.png'
     end
 
     def take_arg(msg, info = '')
