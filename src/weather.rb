@@ -96,7 +96,7 @@ module Weather
     end
 
     def take_arg(msg, info = '')
-      [msg, @city, info].join('|') # msg: OK/WEB/ERR
+      [msg, @city, info] * '|' # msg: OK/WEB/ERR
     end
   end
 end

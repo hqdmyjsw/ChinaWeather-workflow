@@ -14,14 +14,12 @@ module Action
   # Actor
   class Actor
     def run(query)
-      (msg, city, info) = query.split('|')
+      msg, city, info = query.split('|')
       case msg # OK/WEB/ERR
-        when 'OK'
-          copy_to_clipboard(info)
-        when 'WEB'
-          open_web_page(city)
-        else
-          nil
+      when 'OK'
+        copy_to_clipboard(info)
+      when 'WEB'
+        open_web_page(city)
       end
     end
 
