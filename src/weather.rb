@@ -1,7 +1,3 @@
-#!/usr/bin/env ruby
-# encoding: utf-8
-
-require 'rubygems'
 require 'json'
 require 'net/http'
 
@@ -19,14 +15,14 @@ module Weather
       take_weather
     end
 
-    def take_city(default = '未知')
+    def take_city(default: '未知')
       json = take_json(API_LOCATION)
       city = json.nil? ? default : json['content']['address']
       city = default if city.nil? || city.empty?
       city
     end
 
-    def take_json(uri, is_output_error = false)
+    def take_json(uri, is_output_error: false)
       res = Net::HTTP.get_response(URI.parse(uri))
       res.is_a?(Net::HTTPSuccess) ? JSON.parse(res.body) : nil
     rescue
@@ -96,7 +92,7 @@ module Weather
     end
 
     def take_arg(msg, info = '')
-      [msg, @city, info] * '|' # msg: OK/WEB/ERR
+      [msg, @city, info].join('|') # msg: OK/WEB/ERR
     end
   end
 end
