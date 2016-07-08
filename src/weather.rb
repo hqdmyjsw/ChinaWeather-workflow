@@ -47,7 +47,7 @@ module Weather
                      arg_msg = 'WEB')
       print '<?xml version="1.0"?><items><item arg="' << take_arg(arg_msg) <<
             '" valid="yes"><title>' << title << '</title><subtitle>' <<
-            subtitle << '</subtitle><icon>unknown.png</icon></item></items>'
+            subtitle << '</subtitle><icon>' << UNKNOWNICON << '</icon></item></items>'
     end
 
     def output_result(current_city, pm25, weather_data)
@@ -83,7 +83,7 @@ module Weather
           end
         end
       end
-      output || 'unknown.png'
+      output || UNKNOWNICON
     end
 
     def take_arg(msg, info = '')
@@ -95,6 +95,7 @@ end
 API_WEATHER = 'http://api.map.baidu.com/telematics/v3/weather?output=json&ak=Gy7SGUigZ4HxGYDaq9azWy09&location='.freeze
 API_LOCATION = 'http://api.map.baidu.com/location/ip?ak=ZmjUrFm4QT13mrgUrHcYXRIt'.freeze
 EX_STRING = "<>'\"& \n\t\r;#".freeze
+UNKNOWNICON = 'a9.png'.freeze
 ICONS = {
   '雾霾' => 'haze.png',
   '霾' => 'haze.png',
