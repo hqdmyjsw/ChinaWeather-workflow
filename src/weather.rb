@@ -17,7 +17,7 @@ module Weather
 
     def take_city(default: '未知')
       json = take_json(API_LOCATION)
-      city = json.nil? ? default : json['content']['address']
+      city = json && json['content']['address']
       city = default if city.nil? || city.empty?
       city
     end
@@ -37,45 +37,40 @@ module Weather
       if json['error'] != 0
         output_error
       else
-        current_city = json['results'][0]['currentCity']
-        pm25 = json['results'][0]['pm25']
-        weather_data = json['results'][0]['weather_data']
-        output_result(current_city, pm25, weather_data)
+        r = json['results'][0]
+        output_result(r['currentCity'], r['pm25'], r['weather_data'])
       end
     end
 
-    def output_error(title = nil, subtitle = nil, arg_msg = nil)
-      title = "未查到“#{@city}”的天气，按回车显示网页结果。" if title.nil?
-      subtitle = '提示：若查询北京市天气，请输入：tq 北京 或者 tq beijing' if subtitle.nil?
-      arg = take_arg(arg_msg.nil? ? 'WEB' : arg_msg)
-      print "<?xml version=\"1.0\"?> \
-<items><item arg=\"#{arg}\" valid=\"yes\"> \
-<title>#{title}</title> \
-<subtitle>#{subtitle}</subtitle> \
-<icon>unknown.png</icon> \
-</item></items>"
+    def output_error(title = "未查到“#{@city}”的天气，按回车显示网页结果。",
+                     subtitle = '提示：若查询北京市天气，请输入：tq 北京 或者 tq beijing',
+                     arg_msg = 'WEB')
+      print '<?xml version="1.0"?><items><item arg="' << take_arg(arg_msg) <<
+            '" valid="yes"><title>' << title << '</title><subtitle>' <<
+            subtitle << '</subtitle><icon>unknown.png</icon></item></items>'
     end
 
     def output_result(current_city, pm25, weather_data)
-      s = ''
+      items = ''
       weather_data.each.with_index do |x, i|
         title = x['date']
-        subtitle = "#{x['weather']}  #{x['wind']}  #{x['temperature']}"
+        subtitle = '' << x['weather'] << '  ' << x['wind'] <<
+                   '  ' << x['temperature']
         icon = take_weather_icon(x['weather'])
-        arg = take_arg('OK', "#{current_city} #{x['date']} #{x['weather']} #{x['wind']} #{x['temperature']}")
+        arg = take_arg('OK', '' << current_city << ' ' << x['date'] <<
+            ' ' << x['weather'] << ' ' << x['wind'] << ' ' << x['temperature'])
         if i == 0
-          title += "  #{current_city}"
-          unless pm25.empty?
-            subtitle += "  PM2.5: #{pm25}"
-            arg += " PM2.5: #{pm25}"
+          title << '  ' << current_city
+          unless pm25.nil? || pm25.empty?
+            subtitle << '  PM2.5: ' << pm25
+            arg << ' PM2.5: ' << pm25
           end
         end
-        s += "<item arg=\"#{arg}\" valid=\"yes\"> \
-<title>#{title}</title> \
-<subtitle>#{subtitle}</subtitle> \
-<icon>#{icon}</icon></item>"
+        items << '<item arg="' << arg << '" valid="yes"><title>' <<
+          title << '</title><subtitle>' << subtitle <<
+          '</subtitle><icon>' << icon << '</icon></item>'
       end
-      print "<?xml version=\"1.0\"?><items>#{s}</items>"
+      print '<?xml version="1.0"?><items>' << items << '</items>'
     end
 
     def take_weather_icon(keyword)

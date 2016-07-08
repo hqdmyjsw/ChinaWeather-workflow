@@ -30,10 +30,10 @@ module Action
     end
 
     def open_web_page(city)
-      uri = WEB_BAIDU_FORMAT % city
+      uri = '' << WEB_BAIDU_SEARCH << city << '天气'
       system('open', uri)
     end
   end
 end
 
-WEB_BAIDU_FORMAT = 'https://www.baidu.com/s?wd=%s天气'.freeze
+WEB_BAIDU_SEARCH = 'https://www.baidu.com/s?wd='.freeze
