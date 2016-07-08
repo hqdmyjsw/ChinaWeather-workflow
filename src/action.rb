@@ -12,11 +12,14 @@ module Action
   class Actor
     def run(query)
       msg, city, info = query.split('|')
-      case msg # OK/WEB/ERR
+      case msg # OK/WEB/ERR/ICON
       when 'OK'
         copy_to_clipboard(info)
       when 'WEB'
         open_web_page(city)
+      when 'ICON'
+        # for debug, the city is weather name
+        open_web_search("#{city} 图标")
       end
     end
 
@@ -28,9 +31,13 @@ module Action
     def copy_to_clipboard(info)
       IO.popen('pbcopy', 'w') { |f| f << info }
     end
-
+    
     def open_web_page(city)
-      uri = '' << WEB_BAIDU_SEARCH << city << '天气'
+      open_web_search("#{city}天气")
+    end
+
+    def open_web_search(keyword)
+      uri = WEB_BAIDU_SEARCH + keyword
       system('open', uri)
     end
   end

@@ -10,6 +10,12 @@ module Weather
   # Weather fetcher
   class WeatherFetcher
     def search(query)
+      # for debug weather icon
+      if query && query.length > 1 && query[0] == '.'
+        debug_search_icon(query.delete('.' << EX_STRING))
+        return
+      end
+      # search weather
       q = query.delete(EX_STRING)
       @city = q.empty? ? take_city : q
       take_weather
@@ -44,10 +50,11 @@ module Weather
 
     def output_error(title = "未查到“#{@city}”的天气，按回车显示网页结果。",
                      subtitle = '提示：若查询北京市天气，请输入：tq 北京 或者 tq beijing',
-                     arg_msg = 'WEB')
+                     arg_msg = 'WEB',
+                     icon = UNKNOWN_ICON)
       print '<?xml version="1.0"?><items><item arg="' << take_arg(arg_msg) <<
             '" valid="yes"><title>' << title << '</title><subtitle>' <<
-            subtitle << '</subtitle><icon>' << UNKNOWNICON << '</icon></item></items>'
+            subtitle << '</subtitle><icon>' << icon << '</icon></item></items>'
     end
 
     def output_result(current_city, pm25, weather_data)
@@ -83,11 +90,19 @@ module Weather
           end
         end
       end
-      output || UNKNOWNICON
+      output || UNKNOWN_ICON
     end
 
     def take_arg(msg, info = '')
-      [msg, @city, info].join('|') # msg: OK/WEB/ERR
+      [msg, @city, info].join('|') # msg: OK/WEB/ERR/ICON
+    end
+
+    # for debug show weather icon
+    def debug_search_icon(keyword)
+      @city = keyword # to arg: ICON|keyword
+      icon = take_weather_icon(keyword)
+      output_error('查看“' << keyword << '”的天气图标，按回车显示网页搜索结果',
+                   '例子: 输入 tq .晴 可显示晴天图标。', 'ICON', icon)
     end
   end
 end
@@ -95,7 +110,7 @@ end
 API_WEATHER = 'http://api.map.baidu.com/telematics/v3/weather?output=json&ak=Gy7SGUigZ4HxGYDaq9azWy09&location='.freeze
 API_LOCATION = 'http://api.map.baidu.com/location/ip?ak=ZmjUrFm4QT13mrgUrHcYXRIt'.freeze
 EX_STRING = "<>'\"& \n\t\r;#".freeze
-UNKNOWNICON = 'a9.png'.freeze
+UNKNOWN_ICON = 'a9.png'.freeze
 ICONS = {
   '雾霾' => 'haze.png',
   '霾' => 'haze.png',

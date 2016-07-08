@@ -23,3 +23,7 @@ An Alfred workflow that can search china weather.
 * 在显示天气结果上按`return`，会复制天气信息到剪贴板
 * 在查询失败结果上按`return`，会用默认的Web浏览器打开百度的搜索结果页面
 * 在结果中按`command＋return`，会用默认的Web浏览器打开百度的搜索结果页面
+
+### 调试
+
+* 测试天气图标<br>输入`tq .晴`可显示晴天图标。<br>如果查询天气发现没有正确显示某些图标，可通过这种方式检验图标问题，最后请报告到这里。
