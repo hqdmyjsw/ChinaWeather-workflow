@@ -12,7 +12,7 @@ An Alfred workflow that can search china weather.
 	- 大部分天气图标来自[橘色天气预报PNG图标 - 懒人图库](http://www.lanrentuku.com/png/1522.html)
 	- 雾霾图标来自[SOFTICONS](http://www.softicons.com/web-icons/weather-icons-by-wojciech-grzanka/haze-icon)
 	- 警告图标来自[25个感叹号警告PNG图标 - 懒人图库](http://www.lanrentuku.com/png/1638.html)
-* 天气查询和查询IP所在城市的API来自百度车联网
+* 天气查询和查询IP所在城市的API来自[百度车联网](http://developer.baidu.com/map/carapi-7.htm)
 * 可设置默认城市：在`Alfred Preferences`的`Workflows`页中选择`China weather`，双击右侧的`tq`Script Filter，取消注释行（删除 # 符号），然后用你希望的城市名替换`北京`。如果注释掉这行，会查询IP地址所在城市作为默认城市。
 
 ### 使用
