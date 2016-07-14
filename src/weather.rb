@@ -101,8 +101,9 @@ module Weather
     def debug_search_icon(keyword)
       @city = keyword # to arg: ICON|keyword
       icon = take_weather_icon(keyword)
-      output_error('查看“' << keyword << '”的天气图标，按回车显示网页搜索结果',
-                   '例子: 输入 tq .晴 可显示晴天图标。', 'ICON', icon)
+      output_error(keyword.empty? ? '例子: 输入 tq .晴' : '查看“' << keyword << '”的图标',
+                   'ruby: ' << RUBY_VERSION << ', PATH: ' << ENV['PATH'],
+                   'ICON', icon)
     end
   end
 end
