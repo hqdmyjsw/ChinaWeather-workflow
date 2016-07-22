@@ -60,21 +60,21 @@ module Weather
     def output_result(current_city, pm25, weather_data)
       items = ''
       weather_data.each.with_index do |x, i|
-        title = x['date']
-        subtitle = '' << x['weather'] << '  ' << x['wind'] <<
-                   '  ' << x['temperature']
+        dateline = x['date']
+        weatherline = '' << x['weather'] << '  ' << x['wind'] <<
+                      '  ' << x['temperature']
         icon = take_weather_icon(x['weather'])
         arg = take_arg('OK', '' << current_city << ' ' << x['date'] <<
             ' ' << x['weather'] << ' ' << x['wind'] << ' ' << x['temperature'])
         if i == 0
-          title << '  ' << current_city
+          dateline << '  ' << current_city
           unless pm25.nil? || pm25.empty?
-            subtitle << '  PM2.5: ' << pm25
+            weatherline << '  PM2.5: ' << pm25
             arg << ' PM2.5: ' << pm25
           end
         end
         items << '<item arg="' << arg << '" valid="yes"><title>' <<
-          title << '</title><subtitle>' << subtitle <<
+          weatherline << '</title><subtitle>' << dateline <<
           '</subtitle><icon>' << icon << '</icon></item>'
       end
       print '<?xml version="1.0"?><items>' << items << '</items>'

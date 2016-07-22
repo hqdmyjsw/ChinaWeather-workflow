@@ -1,9 +1,7 @@
 # ChinaWeather-workflow
 An Alfred workflow that can search china weather.
 
-<img src="ChinaWeather_1.png" width="500" />
-
-<img src="ChinaWeather_2.png" width="500" />
+<img src="ChinaWeather_1.png" width="400" />
 
 ### 说明
 
